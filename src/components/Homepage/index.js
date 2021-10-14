@@ -2,18 +2,29 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { connect } from "react-redux";
 import "./style.scss";
+import { singleProduct } from "../../redux/product/actions";
 
-const Homepage = ({ products }) => {
+const Homepage = ({ products, singleProduct }) => {
   const history = useHistory();
   const [prod, setProd] = useState(products);
   useEffect(() => {
     setProd(products);
   }, [products]);
+
+  const handleEdit = (singleData) => {
+    singleProduct({data: singleData, route: "edit"});
+    history.push("/add")
+  }
+  
+  const handleAdd = () => {
+    singleProduct({data: {}, route: "add"});
+    history.push("/add")
+  }
   return (
     <div className="homepage">
       <div className="head">
         <h1>Homepage</h1>
-        <button onClick={() => history.push("/add")}>Add Product</button>
+        <button onClick={() => handleAdd()}>Add Product</button>
       </div>
       <table>
         <thead>
@@ -34,7 +45,7 @@ const Homepage = ({ products }) => {
                 <td>{item.launchedAt}</td>
                 <td>{item.launchSite}</td>
                 <td>{item.popularity}</td>
-                <td>Edit</td>
+                <td onClick={() => handleEdit(item)}>Edit</td>
                 <td>Delete</td>
               </tr>
             </>
@@ -49,4 +60,4 @@ const mapStateToProps = ({ products }) => ({
   products: products.products,
 });
 
-export default connect(mapStateToProps, null)(Homepage);
+export default connect(mapStateToProps, { singleProduct })(Homepage);

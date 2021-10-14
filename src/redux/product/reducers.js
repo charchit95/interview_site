@@ -1,9 +1,9 @@
-import { ADD_PRODUCT, EDIT_PRODUCT, DELETE_PRODUCT } from "../actions";
+import { ADD_PRODUCT, EDIT_PRODUCT, DELETE_PRODUCT, SINGLE_PRODUCT } from "../actions";
 
 const initialState = {
-  products: [
-    
-  ],
+  products: [],
+  singleProduct: {},
+  formRoute: ""
 };
 
 // eslint-disable-next-line
@@ -18,7 +18,7 @@ export default (state = initialState, action) => {
     case EDIT_PRODUCT:
       return {
         ...state,
-        products: [...state.products, action.payload],
+        products: action.payload,
       };
     case DELETE_PRODUCT:
       return {
@@ -26,6 +26,13 @@ export default (state = initialState, action) => {
         products: [...state.products, action.payload].filter(
           (product) => product.name !== action.payload.name
         ),
+      };
+    case SINGLE_PRODUCT:
+      console.log("action.payload", action.payload)
+      return {
+        ...state,
+        singleProduct: action.payload.data,
+        formRoute: action.payload.route
       };
 
     default:

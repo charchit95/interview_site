@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router";
-import { addProduct } from "../../redux/product/actions";
-import swal from '@sweetalert/with-react'
+import { addProduct, editProduct } from "../../redux/product/actions";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./style.scss";
 
-const AddProduct = ({ addProduct, products }) => {
-  console.log(products);
+const AddProduct = ({ addProduct, products, singleProduct, formRoute }) => {
   const numStars = 5;
   const history = useHistory();
   const [rank, setRank] = useState(0);
@@ -17,23 +17,50 @@ const AddProduct = ({ addProduct, products }) => {
     popularity: rank,
   });
 
+  useEffect(() => {
+    setData({
+      name: singleProduct.name,
+      launchedAt: singleProduct.launchedAt,
+      launchSite: singleProduct.launchSite,
+      popularity: singleProduct.popularity,
+    });
+    setRank(singleProduct.popularity);
+  }, [singleProduct]);
+
+  const notify = (text) => toast.error(text, "error", { autoClose: 2000 });
   const handleSubmit = (e) => {
     e && e.preventDefault();
-    let newProducts = [...products, data];
-    // if ((name === "password" || name === "passwordRep") && value === " ") return setAlert({ message: "Password can't have space", type: "WARNING" });
-    swal("Thanks for your rating!", `You rated us /3`, "success")
-    addProduct(newProducts);
-    // history.push("/");
+    let newProducts = [...products, { ...data, popularity: rank }];
+    if (data.name === "") {
+      notify("Product Name is empty.");
+    } else if (data.launchedAt === "") {
+      notify("Launched At is empty.");
+    } else if (data.launchSite === "") {
+      notify("Launched At is empty.");
+    } else if (rank === 0) {
+      notify("Popularity is 0.");
+    } else {
+      if (formRoute === "add") {
+        addProduct(newProducts);
+      } else {
+        
+        const dummy = products;
+        let objIndex = dummy.findIndex((obj) => obj.name === singleProduct.name);
+        dummy[objIndex] = data;
+        editProduct(dummy);
+      }
+      history.push("/");
+    }
   };
 
   return (
     <div className="add-product">
-      <h1>Add Product</h1>
+      <ToastContainer />
+      <h1>{singleProduct !== {} ? "Edit" : "Add"} Product</h1>
       <form onSubmit={(e) => handleSubmit(e)}>
         <div className="form-container">
           <div className="formRow">
             <input
-              required
               type="text"
               placeholder="Product Name*"
               value={data.name}
@@ -42,7 +69,6 @@ const AddProduct = ({ addProduct, products }) => {
           </div>
           <div className="formRow">
             <input
-              required
               type="date"
               placeholder="Product Launched At*"
               value={data.launchedAt}
@@ -51,7 +77,6 @@ const AddProduct = ({ addProduct, products }) => {
           </div>
           <div className="formRow">
             <input
-              required
               type="text"
               placeholder="Launch Site*"
               value={data.launchSite}
@@ -87,8 +112,12 @@ const AddProduct = ({ addProduct, products }) => {
 
 const mapStateToProps = ({ products }) => ({
   products: products.products,
+  singleProduct: products.singleProduct.data,
+  routeCheck: products.singleProduct.formRoute,
 });
-export default connect(mapStateToProps, { addProduct })(AddProduct);
+export default connect(mapStateToProps, { addProduct, editProduct })(
+  AddProduct
+);
 
 export const Star = (
   <svg
