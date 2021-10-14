@@ -8,7 +8,7 @@
   form {
     margin: 0px auto;
     width: 100%;
-    max-width: 448px;
+    max-width: 30%;
     background: white;
     border-radius: 4px;
     box-shadow: rgba(60, 66, 87, 0.12) 0px 7px 14px 0px,
@@ -84,6 +84,14 @@
           }
         }
       }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .add-product {
+    form {
+      max-width: 80%;
     }
   }
 }

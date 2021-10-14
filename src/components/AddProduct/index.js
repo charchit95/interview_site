@@ -5,7 +5,7 @@ import { addProduct, editProduct } from "../../redux/product/actions";
 import { v4 as uuidv4 } from "uuid";
 import "./style.scss";
 
-const AddProduct = ({ addProduct, products, singleProduct, routeCheck }) => {
+const AddProduct = ({ addProduct, products, singleProduct, routeCheck, editProduct }) => {
   const numStars = 5;
   const history = useHistory();
   const [isError, setIsError] = useState({
@@ -14,28 +14,28 @@ const AddProduct = ({ addProduct, products, singleProduct, routeCheck }) => {
   });
   const [rank, setRank] = useState(0);
   const [data, setData] = useState({
+    id: "",
     name: "",
     launchedAt: "",
     launchSite: "",
     popularity: rank,
   });
-
+  
   useEffect(() => {
     setData({
+      id: singleProduct?.id,
       name: singleProduct?.name,
       launchedAt: singleProduct?.launchedAt,
       launchSite: singleProduct?.launchSite,
       popularity: singleProduct?.popularity,
     });
     setRank(singleProduct?.popularity);
-    console.log("singleProduct", singleProduct);
     // eslint-disable-next-line
   }, [singleProduct]);
 
   const handleSubmit = (e) => {
     e && e.preventDefault();
 
-    console.log(data);
     if (data.name === undefined || data.name === "") {
       setIsError({ check: true, message: "Product Name is empty." });
     } else if (data.launchedAt === undefined || data.launchedAt === "") {
@@ -51,21 +51,18 @@ const AddProduct = ({ addProduct, products, singleProduct, routeCheck }) => {
   };
 
   const submittion = () => {
-    let newProducts = [
-      ...products,
-      { ...data, popularity: rank, id: uuidv4() },
-    ];
+    // let newProducts = [
+    //   ...products,
+    //   { ...data, popularity: rank, id: uuidv4() },
+    // ];
     if (routeCheck === "add") {
-      addProduct(newProducts);
+      addProduct({ ...data, popularity: rank, id: uuidv4() });
     } else {
-      const dummy = products;
-      let objIndex = dummy.findIndex((obj) => obj.name === singleProduct.name);
-      dummy[objIndex] = { ...data, popularity: rank };
-      editProduct(dummy);
+      
+      editProduct({...data, popularity: rank });
     }
   };
 
-  console.log(isError);
 
   return (
     <div className="add-product">

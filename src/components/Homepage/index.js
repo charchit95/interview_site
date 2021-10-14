@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import "./style.scss";
-import { singleProduct, deleteProduct } from "../../redux/product/actions";
+import {
+  singleProduct,
+  deleteProduct,
+  isAuthenticated,
+} from "../../redux/product/actions";
 
 const Homepage = ({ products, singleProduct, deleteProduct }) => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const [prod, setProd] = useState(products);
+  const [showModal, setShowModal] = useState({
+    bool: false,
+    data: {},
+  });
 
   useEffect(() => {
     setProd(products);
@@ -14,20 +24,23 @@ const Homepage = ({ products, singleProduct, deleteProduct }) => {
 
   const handleEdit = (singleData) => {
     singleProduct({ data: singleData, route: "edit" });
+    dispatch(isAuthenticated(true));
     history.push("/add");
   };
 
   const handleAdd = (item) => {
     singleProduct({ data: {}, route: "add" });
+    dispatch(isAuthenticated(true));
     history.push("/add");
   };
 
   const handleDel = (item) => {
-    // [...state.products, action.payload].filter((product) => product.name !== action.payload.name)
-    const dummy = products.filter((product) => product.id !== item.id);
-    console.log(dummy);
-    console.log("products", products);
-    deleteProduct(dummy);
+    // const dummy = products.filter((product) => product.id !== item.id);
+    deleteProduct(item.id);
+    setShowModal({ bool: false, data: {} });
+  };
+  const handleDelClick = (item) => {
+    setShowModal({ bool: true, data: item });
   };
 
   const handleSort = (type) => {
@@ -54,7 +67,6 @@ const Homepage = ({ products, singleProduct, deleteProduct }) => {
         const sortStars = prod.sort((a, b) =>
           parseInt(a.popularity) > parseInt(b.popularity) ? 1 : -1
         );
-        console.log(sortStars);
         setProd([...sortStars]);
         break;
       default:
@@ -77,34 +89,49 @@ const Homepage = ({ products, singleProduct, deleteProduct }) => {
         <button onClick={() => handleSort("popularity")}>Popularity</button>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Launched At</th>
-            <th>Launch Site</th>
-            <th>Popularity</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {prod.map((item, i) => (
-            <tr key={i}>
-              <td>{item.name}</td>
-              <td>{item.launchedAt}</td>
-              <td>{item.launchSite}</td>
-              <td>{item.popularity}</td>
-              <td className="btn" onClick={() => handleEdit(item)}>
-                ✏️ Edit
-              </td>
-              <td className="btn" onClick={() => handleDel(item)}>
-                🗑️ Delete
-              </td>
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Launched At</th>
+              <th>Launch Site</th>
+              <th>Popularity</th>
+              <th>Edit</th>
+              <th>Delete</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {prod.map((item, i) => (
+              <tr key={i}>
+                <td>{item.name}</td>
+                <td>{item.launchedAt}</td>
+                <td>{item.launchSite}</td>
+                <td>{item.popularity}</td>
+                <td className="btn" onClick={() => handleEdit(item)}>
+                  ✏️ Edit
+                </td>
+                <td className="btn" onClick={() => handleDelClick(item)}>
+                  🗑️ Delete
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {showModal.bool && (
+        <div className="modal">
+          <div className="modal-container">
+            <div className="heading">Do you really want to delete?</div>
+            <div className="btn-container">
+              <button onClick={() => setShowModal(false)}>Cancel</button>
+              <button onClick={() => handleDel(showModal.data)}>
+                Yes, I am Sure
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

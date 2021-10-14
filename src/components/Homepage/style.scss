@@ -3,9 +3,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 100vh;
-  max-height: 100vh;
-  margin: 2rem 5rem;
+  position: relative;
+  padding: 2rem 5rem;
   .head {
     width: 100%;
     display: flex;
@@ -26,38 +25,83 @@
       }
     }
   }
-  table {
-    padding: 2rem 0;
+  .table-container {
     width: 100%;
-    td, th{
-      border-top: 1px solid #ECF0F1;
-      padding: 10px;
-    }
-    td{
-      border-left: 1px solid #ECF0F1;
-      border-right: 1px solid #ECF0F1;
-      &.btn {
-        cursor: pointer;
-        text-align: center;
+    table {
+      width: 100%;
+      padding: 2rem 0;
+      white-space: nowrap;
+      td, th{
+        border-top: 1px solid #ECF0F1;
+        padding: 10px;
       }
+      td{
+        border-left: 1px solid #ECF0F1;
+        border-right: 1px solid #ECF0F1;
+        &.btn {
+          cursor: pointer;
+          text-align: center;
+        }
+      }
+      
+      th{
+        background-color: #617af9;
+        color: #fff;
+        letter-spacing: 2px;
+      }
+      
+      tr:nth-of-type(even) td{
+        background-color: #ccc;
+      }
+    }    
+  }
+  
+
+}
+
+.modal {
+  min-width: 100vh;
+  min-height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(6px);
+  .modal-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+    .heading {
+      font-size: 2rem;
+      font-weight: 700;
+      width: 75%;
+      text-align: center;
     }
-    
-    th{
-      background-color: #617af9;
-      color: #fff;
-      letter-spacing: 2px;
-    }
-    
-    tr:nth-of-type(even) td{
-      background-color: #ccc;
+    .btn-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
     }
   }
 }
 
-
 @media (max-width: 768px) {
   .homepage {
-    table {
+    padding: 2rem;
+    .sorting-container {
+      display: flex;
+      gap: 1rem;
+      flex-direction: column;
+    }
+    .table-container {
       overflow-x: scroll;
     }
   }
