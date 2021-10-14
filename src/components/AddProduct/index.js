@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router";
 import { addProduct, editProduct } from "../../redux/product/actions";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { v4 as uuidv4 } from "uuid";
 import "./style.scss";
 
-const AddProduct = ({ addProduct, products, singleProduct, formRoute }) => {
+const AddProduct = ({ addProduct, products, singleProduct, routeCheck }) => {
   const numStars = 5;
   const history = useHistory();
+  const [isError, setIsError] = useState({
+    check: false,
+    message: null,
+  });
   const [rank, setRank] = useState(0);
   const [data, setData] = useState({
     name: "",
@@ -19,45 +22,55 @@ const AddProduct = ({ addProduct, products, singleProduct, formRoute }) => {
 
   useEffect(() => {
     setData({
-      name: singleProduct.name,
-      launchedAt: singleProduct.launchedAt,
-      launchSite: singleProduct.launchSite,
-      popularity: singleProduct.popularity,
+      name: singleProduct?.name,
+      launchedAt: singleProduct?.launchedAt,
+      launchSite: singleProduct?.launchSite,
+      popularity: singleProduct?.popularity,
     });
-    setRank(singleProduct.popularity);
+    setRank(singleProduct?.popularity);
+    console.log("singleProduct", singleProduct);
+    // eslint-disable-next-line
   }, [singleProduct]);
 
-  const notify = (text) => toast.error(text, "error", { autoClose: 2000 });
   const handleSubmit = (e) => {
     e && e.preventDefault();
-    let newProducts = [...products, { ...data, popularity: rank }];
-    if (data.name === "") {
-      notify("Product Name is empty.");
-    } else if (data.launchedAt === "") {
-      notify("Launched At is empty.");
-    } else if (data.launchSite === "") {
-      notify("Launched At is empty.");
-    } else if (rank === 0) {
-      notify("Popularity is 0.");
+
+    console.log(data);
+    if (data.name === undefined || data.name === "") {
+      setIsError({ check: true, message: "Product Name is empty." });
+    } else if (data.launchedAt === undefined || data.launchedAt === "") {
+      setIsError({ check: true, message: "Launched At is empty." });
+    } else if (data.launchSite === undefined || data.launchSite === "") {
+      setIsError({ check: true, message: "Launch Site is empty." });
+    } else if (rank === undefined || rank === 0) {
+      setIsError({ check: true, message: "Popularity is 0." });
     } else {
-      if (formRoute === "add") {
-        addProduct(newProducts);
-      } else {
-        
-        const dummy = products;
-        let objIndex = dummy.findIndex((obj) => obj.name === singleProduct.name);
-        dummy[objIndex] = data;
-        editProduct(dummy);
-      }
+      submittion();
       history.push("/");
     }
   };
 
+  const submittion = () => {
+    let newProducts = [
+      ...products,
+      { ...data, popularity: rank, id: uuidv4() },
+    ];
+    if (routeCheck === "add") {
+      addProduct(newProducts);
+    } else {
+      const dummy = products;
+      let objIndex = dummy.findIndex((obj) => obj.name === singleProduct.name);
+      dummy[objIndex] = { ...data, popularity: rank };
+      editProduct(dummy);
+    }
+  };
+
+  console.log(isError);
+
   return (
     <div className="add-product">
-      <ToastContainer />
-      <h1>{singleProduct !== {} ? "Edit" : "Add"} Product</h1>
       <form onSubmit={(e) => handleSubmit(e)}>
+        <h1>{routeCheck === "add" ? "Add" : "Edit"} Product</h1>
         <div className="form-container">
           <div className="formRow">
             <input
@@ -101,8 +114,13 @@ const AddProduct = ({ addProduct, products, singleProduct, formRoute }) => {
               ))}
             </div>
           </div>
+          {isError.check && (
+            <div className="formRow">
+              <div className="error-msg">{isError.message}</div>
+            </div>
+          )}
           <div className="formRow">
-            <button type="submit">Submit</button>
+            <button type="submit">{routeCheck === "add" ? "Submit" : "Update"}</button>
           </div>
         </div>
       </form>
@@ -112,8 +130,8 @@ const AddProduct = ({ addProduct, products, singleProduct, formRoute }) => {
 
 const mapStateToProps = ({ products }) => ({
   products: products.products,
-  singleProduct: products.singleProduct.data,
-  routeCheck: products.singleProduct.formRoute,
+  singleProduct: products.singleProduct,
+  routeCheck: products.formRoute,
 });
 export default connect(mapStateToProps, { addProduct, editProduct })(
   AddProduct

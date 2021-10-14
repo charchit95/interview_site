@@ -15,20 +15,19 @@ export default (state = initialState, action) => {
         ...state,
         products: action.payload,
       };
-    case EDIT_PRODUCT:
+      case EDIT_PRODUCT:
+      console.log(action.payload);
       return {
         ...state,
         products: action.payload,
       };
     case DELETE_PRODUCT:
+      console.log("action.payload", action.payload)      
       return {
         ...state,
-        products: [...state.products, action.payload].filter(
-          (product) => product.name !== action.payload.name
-        ),
+        products: action.payload
       };
     case SINGLE_PRODUCT:
-      console.log("action.payload", action.payload)
       return {
         ...state,
         singleProduct: action.payload.data,

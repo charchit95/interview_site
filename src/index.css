@@ -35,3 +35,8 @@ button:hover {
   transition: transform 80ms ease-in;
   transform: scale(1.1);
 }
+
+h1 {
+  color: #617af9;
+  margin: 0;
+}
