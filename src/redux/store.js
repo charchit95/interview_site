@@ -5,7 +5,7 @@ export function configureStore(initialState) {
   const store = createStore(
     reducers,
     initialState,
-    // compose(applyMiddleware(...middlewares))
+    window._REDUX_DEVTOOLS_EXTENSION_ && window._REDUX_DEVTOOLS_EXTENSION_()
   );
 
   if (module.hot) {

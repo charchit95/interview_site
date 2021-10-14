@@ -1,25 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { connect } from "react-redux";
+import "./style.scss";
 
 const Homepage = ({ products }) => {
   const history = useHistory();
   const [prod, setProd] = useState(products);
   useEffect(() => {
-    setProd(products)
-  }, [products])
+    setProd(products);
+  }, [products]);
   return (
-    <>
-      <h1>Homepage</h1>
-      <button onClick={() => history.push("/add")}>Add Product</button>
+    <div className="homepage">
+      <div className="head">
+        <h1>Homepage</h1>
+        <button onClick={() => history.push("/add")}>Add Product</button>
+      </div>
       <table>
         <thead>
-          <th>Name</th>
-          <th>Launched At</th>
-          <th>Launch Site</th>
-          <th>Popularity</th>
-          <th>Edit</th>
-          <th>Delete</th>
+          <tr>
+            <th>Name</th>
+            <th>Launched At</th>
+            <th>Launch Site</th>
+            <th>Popularity</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
         </thead>
         <tbody>
           {prod.map((item, i) => (
@@ -36,7 +41,7 @@ const Homepage = ({ products }) => {
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
